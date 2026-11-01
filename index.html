@@ -1,1 +1,64 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HE3AM Music Hub</title><link rel="stylesheet" href="style.css"></head><body><header><b>🎧 HE3AM Music Hub</b><button id="theme">☀️</button></header><main><section class="hero"><div><small>PLAYLIST MANAGER</small><h1>Your music.<br><span>Your way.</span></h1><p>Organize your music locally — no Spotify, no account, no server.</p></div><button id="new" class="primary">＋ New playlist</button></section><section class="stats"><div><strong id="pc">0</strong><small>Playlists</small></div><div><strong id="tc">0</strong><small>Tracks</small></div><div><strong id="fc">0</strong><small>Favorites</small></div></section><section class="toolbar"><input id="search" placeholder="Search playlists or tracks…"><button id="import">Import</button><button id="backup">Backup</button><input id="file" type="file" accept=".txt,.csv,.json" hidden></section><section id="list" class="grid"></section></main><div id="modal" class="modal hidden"><div class="dialog"><button id="close">×</button><h2>New playlist</h2><input id="name" placeholder="Playlist name"><input id="desc" placeholder="Description"><button id="save" class="primary wide">Create</button></div></div><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101311">
+  <meta name="description" content="A simple, private music library. Create playlists, save tracks and play your own audio links.">
+  <title>HE3AM Music</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="HE3AM Music home"><span class="brand-mark">h</span><span>HE3AM<span class="brand-light"> music</span></span></a>
+      <p class="nav-label">LIBRARY</p>
+      <button class="nav-item active" data-view="home"><span>⌂</span> Home</button>
+      <button class="nav-item" data-view="favorites"><span>♡</span> Favorites</button>
+      <div class="sidebar-heading"><span class="nav-label">YOUR PLAYLISTS</span><button id="new-playlist-side" class="icon-button small" aria-label="Create playlist">＋</button></div>
+      <div id="playlist-nav" class="playlist-nav"></div>
+      <div class="sidebar-bottom"><div class="privacy-note"><span class="privacy-dot"></span><span>Private by design<br><small>Your library stays in this browser.</small></span></div></div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">h</span> HE3AM music</div>
+        <div class="topbar-actions"><label class="search-box"><span>⌕</span><input id="search" type="search" placeholder="Search your library..." autocomplete="off"></label><button id="theme" class="icon-button" aria-label="Toggle theme" title="Toggle theme">☼</button></div>
+      </header>
+
+      <section class="welcome">
+        <div><p class="eyebrow">YOUR PERSONAL MUSIC SPACE</p><h1>All your music.<br><span>Nothing extra.</span></h1><p class="welcome-copy">A clean little home for the songs you love.</p></div>
+        <button id="new-playlist" class="button button-primary"><span>＋</span> New playlist</button>
+      </section>
+
+      <section class="stats" aria-label="Library overview">
+        <div class="stat-card"><span class="stat-icon">▤</span><div><strong id="pc">0</strong><small>Playlists</small></div></div>
+        <div class="stat-card"><span class="stat-icon">♫</span><div><strong id="tc">0</strong><small>Songs</small></div></div>
+        <div class="stat-card"><span class="stat-icon">♡</span><div><strong id="fc">0</strong><small>Favorites</small></div></div>
+      </section>
+
+      <section class="section-heading"><div><p class="eyebrow">YOUR COLLECTION</p><h2 id="section-title">Made for your mood</h2></div><div class="section-actions"><button id="import" class="button button-quiet">Import</button><button id="backup" class="button button-quiet">Export backup</button><input id="file" type="file" accept=".txt,.csv,.json" hidden></div></section>
+      <section id="list" class="playlist-grid" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <footer class="player" id="player">
+    <div class="now-playing"><div class="mini-cover" id="now-cover">♫</div><div class="track-meta"><strong id="now-title">Nothing playing</strong><small id="now-artist">Choose a song to begin</small></div></div>
+    <div class="player-center"><div class="player-controls"><button id="prev" class="player-button" aria-label="Previous song">|◀</button><button id="play" class="play-button" aria-label="Play">▶</button><button id="next" class="player-button" aria-label="Next song">▶|</button></div><div class="progress-row"><span id="current-time">0:00</span><input id="progress" type="range" min="0" max="100" value="0" aria-label="Playback position"><span id="duration">0:00</span></div></div>
+    <div class="player-volume"><span>♫</span><input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume"></div>
+    <audio id="audio" preload="metadata"></audio>
+  </footer>
+
+  <dialog id="playlist-dialog" class="dialog"><form id="playlist-form" method="dialog"><div class="dialog-top"><div><p class="eyebrow">NEW COLLECTION</p><h2>Create playlist</h2></div><button type="button" class="icon-button" data-close aria-label="Close">×</button></div><label>Playlist name<input id="playlist-name" maxlength="60" required placeholder="Late night drive"></label><label>Description <span class="optional">optional</span><input id="playlist-description" maxlength="120" placeholder="Songs for the long way home"></label><div class="dialog-actions"><button type="button" class="button button-quiet" data-close>Cancel</button><button class="button button-primary" type="submit">Create playlist</button></div></form></dialog>
+
+  <dialog id="track-dialog" class="dialog"><form id="track-form" method="dialog"><div class="dialog-top"><div><p class="eyebrow">ADD TO YOUR LIBRARY</p><h2>Add a song</h2></div><button type="button" class="icon-button" data-close aria-label="Close">×</button></div><label>Song title<input id="track-title" maxlength="100" required placeholder="Star Shopping"></label><label>Artist<input id="track-artist" maxlength="100" placeholder="Lil Peep"></label><label>Audio URL <span class="optional">optional — direct audio link</span><input id="track-url" type="url" placeholder="https://example.com/song.mp3"></label><label>Playlist<select id="track-playlist" required></select></label><div class="dialog-actions"><button type="button" class="button button-quiet" data-close>Cancel</button><button class="button button-primary" type="submit">Add song</button></div></form></dialog>
+
+  <dialog id="detail-dialog" class="dialog detail-dialog"><div class="dialog-top"><div><p class="eyebrow">PLAYLIST</p><h2 id="detail-title">Playlist</h2><p id="detail-description" class="detail-description"></p></div><button type="button" class="icon-button" data-close aria-label="Close">×</button></div><div class="detail-actions"><button id="add-track" class="button button-primary">＋ Add song</button><button id="delete-playlist" class="button button-quiet">Delete playlist</button></div><div id="track-list" class="track-list"></div></dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
